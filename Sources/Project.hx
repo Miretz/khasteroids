@@ -124,9 +124,8 @@ class Project {
 					if(asteroid.radius > 40.0) score += 20;
 					if(asteroid.radius > 20.0 && asteroid.radius < 40.0) score += 50;
 					if(asteroid.radius < 20.0) score += 100;
-					
 
-					//spawn smaller asteroids - chunks
+					//spawn smaller asteroids - 2 chunks
 					if(asteroid.radius < 10.0) continue;
 					var as1 = new Asteroid(asteroid.center.x, asteroid.center.y,
 						asteroid.points-1, asteroid.radius/2.0);
@@ -139,7 +138,7 @@ class Project {
 				}
 			}
 		
-			//check collision of asteroid and player (checking each vertex of player)
+			//check collision of asteroid and player
 			var playerHit = false;
 			if(!playerHit && asteroid.checkCollision(player.center, 10.0)){
 				lives -= 1;
@@ -153,16 +152,12 @@ class Project {
 		player.update();
 
 		//update and delete projectiles out of screen
-		var projTemp = [];
+		projectiles = projectiles.filter(function (e) return !e.toDelete);
 		for(p in projectiles){
-			if(!p.toDelete){
-				p.update();
-				projTemp.push(p);
-			}
+			p.update();
 		}
-		projectiles = projTemp;
-
-		//handle controlls
+		
+		//handle controls
 		if(leftPressed){
 			player.rotate(-5.0);
 		}
