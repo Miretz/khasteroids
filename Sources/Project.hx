@@ -59,7 +59,7 @@ class Project {
 				Random.getUpTo(screenWidth), 
 				Random.getUpTo(screenHeight), 
 				Random.getIn(5, 20), 
-				Random.getIn(30, 80)));
+				Random.getIn(30, 50)));
 		}
 		return as;		
 	}
@@ -100,7 +100,15 @@ class Project {
 		}
 	}
 
+	//TODO refactor this method
 	function update(): Void {
+		
+		//filter invisible asteroids
+		asteroids = asteroids.filter(function (e) return e.visible);
+		if(asteroids.length < 1){
+			asteroids = generateAsteroids();
+		}
+
 		//update asteroid
 		for(asteroid in asteroids){
 			asteroid.update();
@@ -130,12 +138,13 @@ class Project {
 					asteroids.push(as2);
 				}
 			}
-
+		
 			//check collision of asteroid and player (checking each vertex of player)
-			if(asteroid.checkCollision(player.center, 20.0)){
+			var playerHit = false;
+			if(!playerHit && asteroid.checkCollision(player.center, 10.0)){
 				lives -= 1;
+				playerHit = true;
 				this.player = new Player(screenWidth/2.0,screenHeight/2.0);
-				this.asteroids = generateAsteroids();
 			}
 			
 		}
