@@ -34,6 +34,8 @@ class Project {
 	private var downPressed: Bool;
 	private var firePressed: Bool;
 	private var fireReleased: Bool;
+
+	private var gameLost: Bool = false;
 	
 	public function new() {
 		Random.init(Std.int(System.time * 1000));
@@ -103,6 +105,15 @@ class Project {
 	//TODO refactor this method
 	function update(): Void {
 		
+		//esc to quit
+		if(escapePressed){
+			System.requestShutdown();
+			return;
+		}
+
+		//game is lost, stop updating
+		if(gameLost) return;
+
 		//filter invisible asteroids
 		asteroids = asteroids.filter(function (e) return e.visible);
 		if(asteroids.length < 1){
@@ -143,7 +154,11 @@ class Project {
 			if(!playerHit && asteroid.checkCollision(player.center, 10.0)){
 				lives -= 1;
 				playerHit = true;
+				asteroid.visible = false;
 				this.player = new Player(screenWidth/2.0,screenHeight/2.0);
+				if(lives < 1){
+					gameLost = true;
+				}
 			}
 			
 		}
@@ -176,11 +191,6 @@ class Project {
 			fireReleased = false;
 		}
 
-		//esc to quit
-		if(escapePressed){
-			System.requestShutdown();
-		}
-
 	}
 
 	function render(framebuffer: Framebuffer): Void {
@@ -202,6 +212,10 @@ class Project {
     	g.fontSize = 25;
 		g.drawString("score: " + score, 10, 10);
 		g.drawString("lives: " + lives, 10, 40);
+
+		if(gameLost){
+			g.drawString("GAME OVER!", screenWidth/2 - 75, screenHeight/2 - 50);
+		}
 
 		g.end();
 
