@@ -58,17 +58,17 @@ class Asteroid {
 		center.x += velocity.x;
 		center.y += velocity.y;
 
-		if(center.x > System.windowWidth()){
+		if(center.x > Project.WIDTH){
 			center.x = 0;
 		}
-		if(center.y >  System.windowHeight()){
+		if(center.y >  Project.HEIGHT){
 			center.y = 0;
 		}
 		if(center.x < 0){
-			center.x = System.windowWidth();
+			center.x = Project.WIDTH;
 		}
 		if(center.y < 0){
-			center.y = System.windowHeight();
+			center.y = Project.HEIGHT;
 		}
 	}
 

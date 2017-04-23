@@ -1,7 +1,6 @@
 package;
 
 import kha.Framebuffer;
-import kha.Scheduler;
 import kha.System;
 import kha.Scaler;
 import kha.Color;
@@ -15,8 +14,10 @@ import kha.audio1.Audio;
 class Project {
 
 	private static var bgColor = Color.fromValue(0x26004d);
-	public static inline var screenWidth = 800;
-	public static inline var screenHeight = 600;
+	
+	public static inline var WIDTH = 800;
+	public static inline var HEIGHT = 600;
+	
 	private static var numAsteroids = 8;
 
 	private var backbuffer: Image;
@@ -42,10 +43,10 @@ class Project {
 		Random.init(Std.int(System.time * 1000));
 		if (Keyboard.get() != null) Keyboard.get().notify(keyDown, keyUp);
 
-		this.backbuffer = Image.createRenderTarget(screenWidth, screenHeight);
+		this.backbuffer = Image.createRenderTarget(WIDTH, HEIGHT);
 		this.score = 0;
 		this.lives = 3;
-		this.player = new Player(screenWidth/2.0, screenHeight/2.0);
+		this.player = new Player(WIDTH/2.0, HEIGHT/2.0);
 		this.projectiles = new Array();
 		this.asteroids = generateAsteroids();
 	}
@@ -54,8 +55,8 @@ class Project {
 		var as = new Array();
 		for(i in 0...numAsteroids){
 			as.push(new Asteroid(
-				Random.getUpTo(screenWidth), 
-				Random.getUpTo(screenHeight), 
+				Random.getUpTo(WIDTH), 
+				Random.getUpTo(HEIGHT), 
 				Random.getIn(5, 20), 
 				Random.getIn(30, 50)));
 		}
@@ -103,7 +104,7 @@ class Project {
 		Audio.play(Assets.sounds.death, false);
 		lives -= 1;
 		asteroid.visible = false;
-		this.player = new Player(screenWidth/2.0,screenHeight/2.0);
+		this.player = new Player(WIDTH/2.0,HEIGHT/2.0);
 		if(lives < 1){
 			this.gameLost = true;
 		}
@@ -215,7 +216,7 @@ class Project {
 		g.drawString("lives: " + lives, 10, 40);
 
 		if(gameLost){
-			g.drawString("GAME OVER!", screenWidth/2 - 75, screenHeight/2 - 50);
+			g.drawString("GAME OVER!", WIDTH/2 - 75, HEIGHT/2 - 50);
 		}
 
 		g.end();

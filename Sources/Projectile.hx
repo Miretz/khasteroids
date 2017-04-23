@@ -30,10 +30,10 @@ class Projectile {
 		center.x += velocity.x;
 		center.y += velocity.y;
 
-		if(center.x > System.windowWidth()){
+		if(center.x > Project.WIDTH){
 			this.toDelete = true;
 		}
-		if(center.y > System.windowHeight()){
+		if(center.y > Project.HEIGHT){
 			this.toDelete = true;
 		}
 		if(center.x < 0){
