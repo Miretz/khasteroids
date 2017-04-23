@@ -48,11 +48,6 @@ class Project {
 		this.player = new Player(screenWidth/2.0, screenHeight/2.0);
 		this.projectiles = new Array();
 		this.asteroids = generateAsteroids();
-		
-		Assets.loadEverything(function () {
-			System.notifyOnRender(render);
-			Scheduler.addTimeTask(update, 0, 1 / 60);
-		});
 	}
 
 	function generateAsteroids(): Array<Asteroid>{
@@ -103,8 +98,45 @@ class Project {
 		}
 	}
 
+	function handlePlayerAsteroidCollision(asteroid: Asteroid): Void {
+		if(!asteroid.checkCollision(player.center, 10.0)) return;
+		Audio.play(Assets.sounds.death, false);
+		lives -= 1;
+		asteroid.visible = false;
+		this.player = new Player(screenWidth/2.0,screenHeight/2.0);
+		if(lives < 1){
+			this.gameLost = true;
+		}
+	}
+
+	function handleProjectileAsteroidCollision(projectile: Projectile, asteroid: Asteroid){
+		if(!asteroid.checkCollision(projectile.center)) return;
+
+		Audio.play(Assets.sounds.impact, false);
+							
+		asteroid.visible = false;
+		projectile.toDelete = true;
+
+		//score
+		if(asteroid.radius > 40.0) score += 20;
+		if(asteroid.radius > 20.0 && asteroid.radius < 40.0) score += 50;
+		if(asteroid.radius < 20.0) score += 100;
+
+		//spawn smaller asteroids - 2 chunks
+		if(asteroid.radius < 10.0) return;
+		var as1 = new Asteroid(asteroid.center.x, asteroid.center.y,
+			asteroid.points-1, asteroid.radius/2.0);
+		var as2 = new Asteroid(asteroid.center.x, asteroid.center.y,
+			asteroid.points-1, asteroid.radius/2.0);
+		as2.velocity.x = -as2.velocity.x;
+		as2.velocity.y = -as2.velocity.y;
+		asteroids.push(as1);
+		asteroids.push(as2);	
+	}
+
+
 	//TODO refactor this method
-	function update(): Void {
+	public function update(): Void {
 		
 		//esc to quit
 		if(escapePressed){
@@ -121,50 +153,14 @@ class Project {
 			asteroids = generateAsteroids();
 		}
 
-		//update asteroid
+		//update asteroids
 		for(asteroid in asteroids){
 			asteroid.update();
 
-			//check collision of asteroid with projectile
 			for(projectile in projectiles){
-				if(asteroid.checkCollision(projectile.center)){
-
-					Audio.play(Assets.sounds.impact, false);
-										
-					asteroid.visible = false;
-					projectile.toDelete = true;
-
-					//score
-					if(asteroid.radius > 40.0) score += 20;
-					if(asteroid.radius > 20.0 && asteroid.radius < 40.0) score += 50;
-					if(asteroid.radius < 20.0) score += 100;
-
-					//spawn smaller asteroids - 2 chunks
-					if(asteroid.radius < 10.0) continue;
-					var as1 = new Asteroid(asteroid.center.x, asteroid.center.y,
-						asteroid.points-1, asteroid.radius/2.0);
-					var as2 = new Asteroid(asteroid.center.x, asteroid.center.y,
-						asteroid.points-1, asteroid.radius/2.0);
-					as2.velocity.x = -as2.velocity.x;
-					as2.velocity.y = -as2.velocity.y;
-					asteroids.push(as1);
-					asteroids.push(as2);
-				}
+				handleProjectileAsteroidCollision(projectile, asteroid);
 			}
-		
-			//check collision of asteroid and player
-			var playerHit = false;
-			if(!playerHit && asteroid.checkCollision(player.center, 10.0)){
-				Audio.play(Assets.sounds.death, false);
-				lives -= 1;
-				playerHit = true;
-				asteroid.visible = false;
-				this.player = new Player(screenWidth/2.0,screenHeight/2.0);
-				if(lives < 1){
-					gameLost = true;
-				}
-			}
-			
+			handlePlayerAsteroidCollision(asteroid);
 		}
 		
 		//update player
@@ -198,7 +194,7 @@ class Project {
 
 	}
 
-	function render(framebuffer: Framebuffer): Void {
+	public function render(framebuffer: Framebuffer): Void {
 
 		var g = backbuffer.g2;
     
