@@ -10,6 +10,7 @@ import kha.input.Keyboard;
 import kha.Key;
 import kha.math.Random;
 import kha.Assets;
+import kha.audio1.Audio;
 
 class Project {
 
@@ -127,7 +128,9 @@ class Project {
 			//check collision of asteroid with projectile
 			for(projectile in projectiles){
 				if(asteroid.checkCollision(projectile.center)){
-					
+
+					Audio.play(Assets.sounds.impact, false);
+										
 					asteroid.visible = false;
 					projectile.toDelete = true;
 
@@ -152,6 +155,7 @@ class Project {
 			//check collision of asteroid and player
 			var playerHit = false;
 			if(!playerHit && asteroid.checkCollision(player.center, 10.0)){
+				Audio.play(Assets.sounds.death, false);
 				lives -= 1;
 				playerHit = true;
 				asteroid.visible = false;
@@ -186,6 +190,7 @@ class Project {
 			player.accelerate(-0.1);
 		}
 		if(firePressed && fireReleased){
+			Audio.play(Assets.sounds.laser, false);
 			projectiles.push(new Projectile(player));
 			firePressed = false;
 			fireReleased = false;

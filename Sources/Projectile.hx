@@ -2,6 +2,7 @@ package;
 
 import kha.math.Vector2;
 import kha.graphics2.Graphics;
+import kha.System;
 
 class Projectile {
 
@@ -29,10 +30,10 @@ class Projectile {
 		center.x += velocity.x;
 		center.y += velocity.y;
 
-		if(center.x > 800){
+		if(center.x > System.windowWidth()){
 			this.toDelete = true;
 		}
-		if(center.y > 600){
+		if(center.y > System.windowHeight()){
 			this.toDelete = true;
 		}
 		if(center.x < 0){
